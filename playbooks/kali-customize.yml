@@ -1,0 +1,192 @@
+---
+- hosts: localhost
+  connection: local
+  become: true
+  vars:
+    obsidian_version: 0.15.9
+
+  tasks:
+    - name: Add VSCode repository
+      ansible.builtin.apt_repository:
+        repo: deb [arch=amd64,arm64,armhf] http://packages.microsoft.com/repos/code stable main
+        filename: vscode
+        state: present
+
+    - name: Add VSCode repository
+      ansible.builtin.apt_repository:
+        repo: deb http://download.opensuse.org/repositories/home:/manuelschneid3r/Debian_Testing/ /
+        filename: home:manuelschneid3r
+        state: present
+
+    - name: Add manuelscheid3r key
+      ansible.builtin.apt_key:
+        url: https://download.opensuse.org/repositories/home:manuelschneid3r/Debian_Testing/Release.key
+        state: present
+
+    - name: Install Kali Linux large metapackage
+      ansible.builtin.package:
+        state: present
+        name:
+          - kali-linux-large
+      
+    - name: Install web hacking tools
+      ansible.builtin.package:
+        state: present
+        name:
+          - zaproxy
+        
+    - name: Install reversing tools
+      ansible.builtin.package:
+        state: present
+        name:
+          - ghidra
+          - jd-gui
+
+    - name: Install network tools
+      ansible.builtin.package:
+        state: present
+        name:
+          - ipcalc
+          - filezilla
+
+    - name: Install shells
+      ansible.builtin.package:
+        state: present
+        name:
+          - fish
+          - dash
+          - xonsh
+          - shellcheck
+          - terminator
+          - xfce4-terminal
+
+    - name: Install IDEs
+      ansible.builtin.package:
+        state: present
+        name:
+          - code
+          - jupyter
+          - spyder
+
+    - name: Install development tools
+      ansible.builtin.package:
+        state: present
+        name:
+          - gitg
+
+    - name: install VS Code plugin
+      become_user: "{{ config_user }}"
+      command: "/usr/bin/code --install-extension {{ item }}"
+      when: "config_user != 'root'"
+      loop:
+        - ms-vscode.hexeditor
+        - ms-azuretools.vscode-docker
+        - ms-kubernetes-tools.vscode-kubernetes-tools
+        - ms-vscode-remote.remote-containers
+        - mindaro.mindaro
+        - ms-vsliveshare.vsliveshare-pack
+        - VisualStudioExptTeam.vscodeintellicode
+        - rust-lang.rust-analyzer
+        - golang.go
+        - vscjava.vscode-java-pack
+        - ms-python.python
+        - runem.lit-plugin
+        - esbenp.prettier-vscode
+        - Vue.volar
+        - Vue.vscode-typescript-vue-plugin
+        - sdras.vue-vscode-snippets
+        - dbaeumer.vscode-eslint
+        - webfreak.code-d
+        - jnoortheen.xonsh
+        - mtxr.sqltools
+        - redhat.ansible
+        - ms-vscode.cpptools-extension-pack
+        - jeff-hykin.better-cpp-syntax
+        - thenouillet.symfony-vscode
+        - mblode.twig-language-2
+        - firefox-devtools.vscode-firefox-debug
+        - xdebug.php-pack
+        - hbenl.vscode-test-explorer
+        - gruntfuggly.todo-tree
+        - christian-kohler.path-intellisense
+        - vscode-icons-team.vscode-icons
+        - oderwat.indent-rainbow
+        - eamodio.gitlens
+
+    - name: install Git Dumper
+      pip:
+        virtualenv: /opt/git-dumper
+        state: latest
+        name:
+          - git-dumper
+          - pip
+
+    - name: install Gdbgui
+      pip:
+        virtualenv: /opt/gdbgui
+        state: latest
+        name:
+          - gdbgui
+          - pip
+        
+    - name: Install Docker
+      ansible.builtin.package:
+        state: present
+        name:
+          - docker.io
+          - docker-compose
+        
+    - name: Install Desktop tools
+      ansible.builtin.package:
+        state: present
+        name:
+          - plank
+          - albert
+          - synaptic
+          - torbrowser-launcher
+
+    - name: Install Remmina
+      ansible.builtin.package:
+        state: present
+        name:
+          - remmina
+          - remmina-plugin-exec
+          - remmina-plugin-python
+          - remmina-plugin-spice
+          - remmina-plugin-www
+          - remmina-plugin-x2go
+
+    - name: install Obsidian
+      get_url:
+        url: "https://github.com/obsidianmd/obsidian-releases/releases/download/v{{ obsidian_version }}/Obsidian-{{ obsidian_version }}.AppImage"
+        dest: /usr/local/bin/Obsidian.AppImage
+        owner: root
+        group: root
+        mode: 775
+        force: true
+
+    - name: Install wallpapers
+      ansible.builtin.package:
+        state: present
+        name:
+          - kali-wallpapers-all
+          - kali-community-wallpapers
+
+    - name: copy /usr/local
+      copy:
+        src: ../files/local/
+        dest: /usr/local
+        force: true
+
+    - name: set exec permissions
+      file:
+        path: /usr/local/bin
+        mode: "775"
+        recurse: true
+
+    - name: copy user configs
+      become_user: "{{ config_user }}"
+      copy:
+        src: ../files/userconfig/
+        dest: ~/.config
+        force: true

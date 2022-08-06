@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Obsidian
+Comment=Obsidian Note Application
+Exec=/usr/local/bin/Obsidian.AppImage
+Icon=com.github.philip-scott.notes-up
+Path=
+Terminal=false
+StartupNotify=false

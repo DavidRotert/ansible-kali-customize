@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Auto Resolution (KVM)
+Comment=Auto Resolution (KVM)
+Icon=preferences-desktop-display
+Path=
+Terminal=false
+StartupNotify=false
+Exec=/usr/local/bin/auto-resolution.sh
