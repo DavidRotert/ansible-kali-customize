@@ -145,6 +145,13 @@
           - synaptic
           - torbrowser-launcher
 
+    - name: Install Kaboxer
+      ansible.builtin.package:
+        state: present
+        name:
+          - kaboxer
+          - zenmap-kbx
+
     - name: Install Remmina
       ansible.builtin.package:
         state: present
